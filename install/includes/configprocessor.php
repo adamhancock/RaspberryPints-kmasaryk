@@ -47,7 +47,7 @@ flush();
 //Validate DB connectivity
 echo "Checking DB connectivity...";
 flush();
-$con=mysqli_connect($servername,"root",$rootpass);
+$con=mysqli_connect($servername,$dbuser,$dbpass1);
 
 if (mysqli_connect_errno())
   {
@@ -76,7 +76,7 @@ flush();
 
 
 //Display errors and die
-if ($validerror !='') 
+if ($validerror !='')
 	{
 		echo "<html><body>";
 		echo $validerror;
@@ -89,7 +89,7 @@ if ($action == 'remove')
 {
 	echo "Deleting raspberrypints database...";
 	flush();
-	$con=mysqli_connect($servername,"root",$rootpass);
+	$con=mysqli_connect($servername,$dbuser,$dbpass1);
 	// Check connection
 
 	if (mysqli_connect_errno())
@@ -102,7 +102,7 @@ if ($action == 'remove')
 	mysqli_close($con);
 	echo "Success!<br>";
 	flush();
-	
+
 	echo "Removing configuration files...";
 	flush();
 	unlink('../../includes/config.php');
@@ -111,16 +111,16 @@ if ($action == 'remove')
 	echo "Success!<br>";
 	flush();
 }
-	
+
 if ($action == 'install')
 {
-	
+
 require_once __DIR__.'/config_files.php';
-	
+
 	//-----------------Create the main config file-----------------
 	echo "Update config files...";
 	flush();
-	
+
 	file_put_contents('../../includes/config.php', $mainconfigstring);
 
 	echo "Success!<br>";
@@ -131,13 +131,13 @@ require_once __DIR__.'/config_files.php';
 
 	file_put_contents('../../admin/includes/conn.php', $adminconfig1);
 	file_put_contents('../../admin/includes/configp.php', $adminconfig2);
-	
+
 	echo "Success!<br>";
 	flush();
 	//-----------------Create RPints User--------------------------
 	echo "Creating RPints database user...";
 	flush();
-	$con=mysqli_connect($servername,"root",$rootpass);
+	$con=mysqli_connect($servername,$dbuser,$dbpass1);
 	// Check connection
 
 	if (mysqli_connect_errno())
@@ -156,16 +156,16 @@ require_once __DIR__.'/config_files.php';
 	flush();
 	$dbms_schema = "../../sql/schema.sql";
 
-		
+
 	$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema)) or die('Cannot find SQL schema file. ');
-	
+
 	$sql_query = remove_remarks($sql_query);
 	$sql_query = remove_comments($sql_query);
 	$sql_query = split_sql_file($sql_query, ';');
 
 
 	//mysql_connect($servername,'root',$rootpass) or die('error connection');
-	$con=mysqli_connect($servername,"root",$rootpass);	
+	$con=mysqli_connect($servername,$dbuser,$dbpass1);
 
 	$i=1;
 	foreach($sql_query as $sql){
@@ -183,7 +183,7 @@ require_once __DIR__.'/config_files.php';
 	//-----------------Add the admin user to the Users DB----------
 	echo "Adding new admin user...";
 	flush();
-	$con=mysqli_connect($servername,"root",$rootpass,"raspberrypints");
+	$con=mysqli_connect($servername,$dbuser,$dbpass1,"raspberrypints");
 	// Check connection
 
 	if (mysqli_connect_errno())
@@ -198,23 +198,23 @@ require_once __DIR__.'/config_files.php';
 	flush();
 	//-----------------Load the sample data if requested-----------
 
-		if(!empty($_POST['sampledata'])) 
+		if(!empty($_POST['sampledata']))
 		{
 			echo "Adding sample data...";
 			flush();
-			
+
 			$dbms_schema = "../../sql/test_data.sql";
 
-		
+
 			$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema)) or die('Cannot find SQL schema file. ');
-			
+
 			$sql_query = remove_remarks($sql_query);
 			$sql_query = remove_comments($sql_query);
 			$sql_query = split_sql_file($sql_query, ';');
 
 
 			//mysql_connect($servername,'root',$rootpass) or die('error connection');
-            $con=mysqli_connect($servername,'root',$rootpass);
+            $con=mysqli_connect($servername,$dbuser,$dbpass1);
 
 			$i=1;
 			foreach($sql_query as $sql){
@@ -224,7 +224,7 @@ require_once __DIR__.'/config_files.php';
                 mysqli_query($con, $sql);
 			}
 
-			
+
 			echo "Success!<br>";
 			flush();
 		}
